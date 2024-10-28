@@ -1,29 +1,67 @@
-## What this does?
-This repo along with https://github.com/saha-rajdeep/kubernetesmanifest creates a Jenkins pipeline with GitOps to deploy code into a Kubernetes cluster. CI part is done via Jenkins and CD part via ArgoCD (GitOps).
+# Spring Boot based Java web application
+ 
+This is a simple Sprint Boot based Java application that can be built using Maven. Sprint Boot dependencies are handled using the pom.xml 
+at the root directory of the repository.
 
-## Jenkins installation
-Jenkins is installed on EC2. Follow the instructions on https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/ . You can skip "Configure a Cloud" part for this demo. Please note some commands from this link might give errors, below are the workarounds:
+This is a MVC architecture based application where controller returns a page with title and message attributes to the view.
 
-1. If you get daemonize error while running the command `sudo yum install jenkins java-1.8.0-openjdk-devel -y` then , run the commands from the answer of https://stackoverflow.com/questions/68806741/how-to-fix-yum-update-of-jenkins
+## Execute the application locally and access it using your browser
 
-2. Install Docker on the EC2 after Jenkins is installed by following the instructions on https://serverfault.com/questions/836198/how-to-install-docker-on-aws-ec2-instance-with-ami-ce-ee-update
+Checkout the repo and move to the directory
 
-3. Run `sudo chmod 666 /var/run/docker.sock` on the EC2 after Docker is installed.
+```
+git clone https://github.com/iam-veeramalla/Jenkins-Zero-To-Hero/java-maven-sonar-argocd-helm-k8s/sprint-boot-app
+cd java-maven-sonar-argocd-helm-k8s/sprint-boot-app
+```
 
-4. Install Git on the EC2 by running `sudo yum install git`
+Execute the Maven targets to generate the artifacts
 
-### Jenkins plugins
+```
+mvn clean package
+```
 
-Install the following plugins for the demo.
-- Amazon EC2 plugin (No need to set up Configure Cloud after)
-- Docker plugin  
-- Docker Pipeline
-- GitHub Integration Plugin
-- Parameterized trigger Plugin
+The above maven target stroes the artifacts to the `target` directory. You can either execute the artifact on your local machine
+(or) run it as a Docker container.
 
-## ArgoCD installation 
+** Note: To avoid issues with local setup, Java versions and other dependencies, I would recommend the docker way. **
 
-Install ArgoCD in your Kubernetes cluster following this link - https://argo-cd.readthedocs.io/en/stable/getting_started/
 
-## How to run!
-Follow along with my Udemy Kubernetes course lectures (GitOps Chapter) to understand how it works, detailed setup instructions, with step by step demo. My highest rated Kubernetes EKS discounted Udemy course link in www.cloudwithraj.com
+### Execute locally (Java 11 needed) and access the application on http://localhost:8080
+
+```
+java -jar target/spring-boot-web.jar
+```
+
+### The Docker way
+
+Build the Docker Image
+
+```
+docker build -t ultimate-cicd-pipeline:v1 .
+```
+
+```
+docker run -d -p 8010:8080 -t ultimate-cicd-pipeline:v1
+```
+
+Hurray !! Access the application on `http://<ip-address>:8010`
+
+
+## Next Steps
+
+### Configure a Sonar Server locally
+
+```
+apt install unzip
+adduser sonarqube
+wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.4.0.54424.zip
+unzip *
+chmod -R 755 /home/sonarqube/sonarqube-9.4.0.54424
+chown -R sonarqube:sonarqube /home/sonarqube/sonarqube-9.4.0.54424
+cd sonarqube-9.4.0.54424/bin/linux-x86-64/
+./sonar.sh start
+```
+
+Hurray !! Now you can access the `SonarQube Server` on `http://<ip-address>:9000` 
+
+

@@ -1,12 +1,13 @@
-# syntax=docker/dockerfile:1
+# You can change this base image to anything else
+# But make sure to use the correct version of Java
+FROM adoptopenjdk/openjdk11:alpine-jre
 
-FROM python:3.8-slim-buster
+# Simply the artifact path
+ARG artifact=target/spring-boot-web.jar
 
-WORKDIR /app
+WORKDIR /opt/app
 
-COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+COPY ${artifact} app.jar
 
-COPY . .
-
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+# This should not be changed
+ENTRYPOINT ["java","-jar","app.jar"]
